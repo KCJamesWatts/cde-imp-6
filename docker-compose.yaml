@@ -1,0 +1,84 @@
+name: cde-imp-6
+services:
+  frontend:
+    image: node:22.21.0
+    container_name: cde-imp-6-frontend
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+    ports:
+      - 8000:5173
+    command: sh -c "npm update -g npm && npm run dev -- --host 0.0.0.0 --port 5173"
+  backend:
+    image: mcr.microsoft.com/dotnet/sdk:8.0
+    container_name: cde-imp-6-backend
+    working_dir: /src
+    volumes:
+      - ./backend:/src
+      - ./backend/dotnet_nuget:/root/.nuget/packages
+    ports:
+      - 8001:5174
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: 0.0.0.0:5174
+      DOTNET_USE_POLLING_FILE_WATCHER: "1"
+      DOTNET_WATCH_SUPPRESS_LAUNCH_BROWSER: "1"
+    command: bash -lc "dotnet restore && dotnet watch run --non-interactive --urls http://0.0.0.0:5174"
+  redis:
+    container_name: cde-imp-6-redis
+    image: redis:8.2.2
+    restart: always
+    ports:
+      - 6379:6379
+    command: redis-server --appendonly yes
+  redis-commander:
+    container_name: cde-imp-6-redis-commander
+    image: rediscommander/redis-commander:latest
+    restart: always
+    environment:
+      REDIS_HOSTS: local:redis:6379
+    ports:
+      - 8002:8081
+  azurite:
+    container_name: cde-imp-6-azurite
+    image: mcr.microsoft.com/azure-storage/azurite
+    ports:
+      - 10001:10001
+      - 10002:10002
+      - 10003:10003
+    command: azurite --location /data --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0
+    volumes:
+      - azurite-data:/data
+  mailhog:
+    container_name: cde-imp-6-mailhog
+    image: mailhog/mailhog:v1.0.1
+    ports:
+      - 1025:1025
+      - 8003:8025
+  postgres:
+    container_name: cde-imp-6-postgres
+    image: postgres:18.0
+    ports:
+      - 5432:5432
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_MULTIPLE_DATABASES: app,c1,c2,c3
+    volumes:
+      - .docker/postgres/entrypoint/multiple-databases-entrypoint.sh:/docker-entrypoint-initdb.d/multiple-databases-entrypoint.sh
+      - pgdata:/var/lib/postgresql
+  pgadmin:
+    container_name: cde-imp-6-pgadmin
+    image: elestio/pgadmin:latest
+    ports:
+      - 8004:8080
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@postgres.dev
+      PGADMIN_DEFAULT_PASSWORD: postgres
+    volumes:
+      - .docker/pgadmin/servers.json:/pgadmin4/servers.json
+volumes:
+  azurite-data: {}
+  pgdata: {}

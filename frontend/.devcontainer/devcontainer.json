@@ -1,0 +1,82 @@
+{
+  "name": "CDE Imp 6 - Frontend",
+  "dockerComposeFile": [
+    "../../docker-compose.yaml"
+  ],
+  "service": "frontend",
+  "workspaceFolder": "/app",
+  "overrideCommand": false,
+  "shutdownAction": "none",
+  "updateRemoteUserUID": true,
+  "postCreateCommand": "",
+  "runServices": [
+    "frontend",
+    "backend",
+    "redis",
+    "redis-commander",
+    "azurite",
+    "mailhog",
+    "postgres",
+    "pgadmin"
+  ],
+  "forwardPorts": [
+    5173,
+    5174,
+    6379,
+    8081,
+    10001,
+    10002,
+    10003,
+    1025,
+    8025,
+    5432,
+    8080
+  ],
+  "portsAttributes": {
+    "5173": {
+      "label": "Vite (frontend)"
+    },
+    "5174": {
+      "label": "ASP.NET (backend)"
+    },
+    "6379": {
+      "label": "Redis"
+    },
+    "8081": {
+      "label": "Redis Commander"
+    },
+    "10001": {
+      "label": "Azurite Blob"
+    },
+    "10002": {
+      "label": "Azurite Queue"
+    },
+    "10003": {
+      "label": "Azurite Table"
+    },
+    "1025": {
+      "label": "Mailhog SMTP"
+    },
+    "8025": {
+      "label": "Mailhog HTTP"
+    },
+    "5432": {
+      "label": "Postgres"
+    },
+    "8080": {
+      "label": "PGAdmin"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-azuretools.vscode-docker",
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint"
+      ],
+      "settings": {
+        "editor.formatOnSave": true
+      }
+    }
+  }
+}

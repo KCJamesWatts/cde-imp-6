@@ -1,0 +1,56 @@
+name: On Relase - Build & Publish
+on:
+  release:
+    types:
+      - published
+permissions:
+  contents: read
+  packages: write
+env:
+  REGISTRY: ghcr.io
+  OWNER: ${{ github.repository_owner }}
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - service: frontend
+            image: cde-imp-6-frontend
+            context: .
+            dockerfile: frontend/.docker/Dockerfile
+          - service: backend
+            image: cde-imp-6-backend
+            context: .
+            dockerfile: backend/.docker/Dockerfile
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Docker Metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.OWNER }}/${{ matrix.image }}
+          tags: |
+            type=ref,event=tag
+            type=raw,value=latest
+            type=sha,prefix=,format=short
+      - name: Build and Push ${{ matrix.service }}
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.dockerfile }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

@@ -1,0 +1,19 @@
+{
+    "Servers": {
+        "1": {
+            "Name": "Local Development Server",
+            "Group": "Devlopment",
+            "Host": "postgres",
+            "Port": 5432,
+            "MaintenanceDB": "postgres",
+            "Username": "postgres",
+            "Comment": "Development Server",
+            "Tags": [
+                {
+                    "color": "#EC0BB4",
+                    "text": "Development"
+                }
+            ]
+        }
+    }
+}

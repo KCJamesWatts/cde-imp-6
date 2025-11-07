@@ -1,0 +1,10 @@
+name: cde-imp-6-production-images
+services:
+  frontend:
+    image: ghcr.io/kcjameswatts/cde-imp-6-frontend:latest
+    ports:
+      - 80:80
+  backend:
+    image: ghcr.io/kcjameswatts/cde-imp-6-backend:latest
+    ports:
+      - 9000:9000
