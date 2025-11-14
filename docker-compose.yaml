@@ -10,7 +10,7 @@ services:
       - 8000:5173
     command: sh -c "npm update -g npm && npm run dev -- --host 0.0.0.0 --port 5173"
   backend:
-    image: mcr.microsoft.com/dotnet/sdk:8.0
+    image: mcr.microsoft.com/dotnet/sdk:10.0
     container_name: cde-imp-6-backend
     working_dir: /src
     volumes:
@@ -27,14 +27,12 @@ services:
   redis:
     container_name: cde-imp-6-redis
     image: redis:8.2.2
-    restart: always
     ports:
       - 6379:6379
     command: redis-server --appendonly yes
   redis-commander:
     container_name: cde-imp-6-redis-commander
     image: rediscommander/redis-commander:latest
-    restart: always
     environment:
       REDIS_HOSTS: local:redis:6379
     ports:
@@ -60,7 +58,6 @@ services:
     image: postgres:18.0
     ports:
       - 5432:5432
-    restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -73,7 +70,6 @@ services:
     image: elestio/pgadmin:latest
     ports:
       - 8004:8080
-    restart: always
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@postgres.dev
       PGADMIN_DEFAULT_PASSWORD: postgres
